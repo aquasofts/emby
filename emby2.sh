@@ -66,7 +66,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # 提示用户输入证书目录
-echo "请输入您域名证书公钥目录："
+echo "请输入您域名证书公钥目录：(例如: /root/fullchain.pem)"
 read -r content3
 
 # 替换/etc/nginx/sites-available/emby2中的fullchain为用户输入的证书公钥目录
@@ -77,7 +77,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # 提示用户输入证书目录
-echo "请输入您域名证书私钥目录："
+echo "请输入您域名证书私钥目录：(例如: /root/privkey.pem)"
 read -r content4
 
 # 替换/etc/nginx/sites-available/emby2中的privkey为用户输入的证书公钥目录

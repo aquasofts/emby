@@ -23,7 +23,7 @@ else
 fi
 
 # nginx配置文件下载地址
-url="https://raw.githubusercontent.com/aquasofts/emby/main/emby"
+url="https://raw.githubusercontent.com/aquasofts/emby/main/emby2"
 
 # 目标目录
 destination="/etc/nginx/sites-available/"
@@ -47,8 +47,8 @@ echo "文件已拉取完成"
 echo "请输入您的域名："
 read -r content1
 
-# 替换/etc/nginx/sites-available/emby中的yourdomain为用户输入的域名
-sudo sed -i "s/yourdomain/$content1/g" /etc/nginx/sites-available/emby
+# 替换/etc/nginx/sites-available/emby2中的yourdomain为用户输入的域名
+sudo sed -i "s/yourdomain/$content1/g" /etc/nginx/sites-available/emby2
 if [ $? -ne 0 ]; then
     echo "域名替换失败，请检查文件路径和权限。" >&2
     exit 1
@@ -58,22 +58,44 @@ fi
 echo "请输入您需要反代的域名："
 read -r content2
 
-# 替换/etc/nginx/sites-available/emby中的embydomain为用户输入的emby域名
-sudo sed -i "s/embydomain/$content2/g" /etc/nginx/sites-available/emby
+# 替换/etc/nginx/sites-available/emby2中的embydomain为用户输入的emby域名
+sudo sed -i "s/embydomain/$content2/g" /etc/nginx/sites-available/emby2
 if [ $? -ne 0 ]; then
     echo "反代的域名替换失败，请检查文件路径和权限。" >&2
     exit 1
 fi
 
+# 提示用户输入证书目录
+echo "请输入您域名证书公钥目录："
+read -r content3
+
+# 替换/etc/nginx/sites-available/emby2中的fullchain为用户输入的证书公钥目录
+sudo sed -i "s/fullchain/$content3/g" /etc/nginx/sites-available/emby2
+if [ $? -ne 0 ]; then
+    echo "证书公钥替换失败，请检查文件路径和权限。" >&2
+    exit 1
+fi
+
+# 提示用户输入证书目录
+echo "请输入您域名证书私钥目录："
+read -r content4
+
+# 替换/etc/nginx/sites-available/emby2中的privkey为用户输入的证书公钥目录
+sudo sed -i "s/privkey/$content4/g" /etc/nginx/sites-available/emby2
+if [ $? -ne 0 ]; then
+    echo "证书私钥替换失败，请检查文件路径和权限。" >&2
+    exit 1
+fi
+
 # 链接配置
-if [ -f /etc/nginx/sites-available/emby ]; then
-    sudo ln -s /etc/nginx/sites-available/emby /etc/nginx/sites-enabled/
+if [ -f /etc/nginx/sites-available/emby2 ]; then
+    sudo ln -s /etc/nginx/sites-available/emby2 /etc/nginx/sites-enabled/
     if [ $? -ne 0 ]; then
         echo "配置链接失败，请检查文件路径和权限。" >&2
         exit 1
     fi
 else
-    echo "/etc/nginx/sites-available/emby 文件不存在。" >&2
+    echo "/etc/nginx/sites-available/emby2 文件不存在。" >&2
     exit 1
 fi
 
@@ -89,4 +111,4 @@ else
     exit 1
 fi
 
-echo "脚本执行完成 您的链接为 http://$content1"
+echo "脚本执行完成 您的链接为 https://$content1"

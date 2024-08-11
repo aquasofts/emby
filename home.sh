@@ -1,6 +1,7 @@
 #!/bin/bash
 
-echo "如果输入 '1'，则安装 http 协议；如果输入 '2'，则安装 https 协议(需要提前准备好域名证书):"
+echo "如果输入 '1'，则安装 http 协议；"
+echo "如果输入 '2'，则安装 https 协议(需要提前准备好域名证书)"
 read input
 
 if [ "$input" == "1" ]; then

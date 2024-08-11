@@ -1,0 +1,25 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name yourdomain; #
+    return 301 https://$host$request_uri;
+}
+
+server {
+
+    client_max_body_size 100M;
+
+    add_header 'Referrer-Policy' 'origin-when-cross-origin';
+    add_header Strict-Transport-Security "max-age=15552000; preload" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    proxy_ssl_name embydomain; # 你要反代的emby服务器的域名
+    proxy_ssl_server_name on;
+
+    location / {
+        proxy_pass https://embydomain:443; # 你要反代的emby服务器的域名
+        proxy_intercept_errors on;
+    }
+}

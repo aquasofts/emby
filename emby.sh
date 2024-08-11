@@ -44,7 +44,7 @@ fi
 echo "文件已拉取完成"
 
 # 提示用户输入自己的域名
-echo "请输入您的域名："
+echo "请输入您的域名(需要解析到这台机器上)："
 read -r content1
 
 # 替换/etc/nginx/sites-available/emby中的yourdomain为用户输入的域名

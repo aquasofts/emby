@@ -37,10 +37,10 @@ echo "文件已拉取完成"
 
 # 提示用户输入自己的域名
 echo "请输入您的域名(需要解析到这台机器上)："
-read -r content1
+read -r domain
 
 # 替换/etc/nginx/sites-available/emby中的yourdomain为用户输入的域名
-sudo sed -i "s/yourdomain/$content1/g" /etc/nginx/sites-available/emby
+sudo sed -i "s/yourdomain/$domain/g" /etc/nginx/sites-available/emby
 if [ $? -ne 0 ]; then
     echo "域名替换失败，请检查文件路径和权限。" >&2
     exit 1
@@ -81,4 +81,4 @@ else
     exit 1
 fi
 
-echo "脚本执行完成 您的链接为 http://$content1"
+echo "脚本执行完成 您的链接为 http://$domain"

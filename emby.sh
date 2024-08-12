@@ -17,12 +17,12 @@ fi
 # nginx配置文件下载地址
 url="https://raw.githubusercontent.com/aquasofts/emby/main/emby"
 
-# 目标目录
-destination="/etc/nginx/sites-available/"
+# 目标文件路径
+destination="/etc/nginx/sites-available/emby"
 
-# 使用wget命令下载文件到目标目录
+# 使用wget命令下载文件到目标文件路径
 if command -v wget >/dev/null 2>&1; then
-    sudo wget -P "$destination" "$url"
+    sudo wget -O "$destination" "$url"
     if [ $? -ne 0 ]; then
         echo "文件下载失败，请检查网络连接。" >&2
         exit 1

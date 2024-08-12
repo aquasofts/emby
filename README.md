@@ -16,3 +16,8 @@
 4.本脚基本仅在Ubuntu22、Debian12进行测试。
 
 5.本脚本仅供学习交流使用，不提供任何资源，请勿用于非法用途，否则后果自负。
+
+6.如果遇到如图所示界面，直接回车即可
+
+![image](https://github.com/aquasofts/emby/blob/main/image.png)
+

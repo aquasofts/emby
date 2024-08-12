@@ -40,7 +40,7 @@ echo "请输入您的域名(需要解析到这台机器上)："
 read -r domain
 
 # 替换/etc/nginx/sites-available/emby2中的yourdomain为用户输入的域名
-sudo sed -i "s/yourdomain/$domain/g" /etc/nginx/sites-available/emby2
+sudo sed -i "s|yourdomain|$domain|g" /etc/nginx/sites-available/emby2
 if [ $? -ne 0 ]; then
     echo "域名替换失败，请检查文件路径和权限。" >&2
     exit 1
@@ -51,7 +51,7 @@ echo "请输入您需要反代的域名："
 read -r content2
 
 # 替换/etc/nginx/sites-available/emby2中的embydomain为用户输入的emby域名
-sudo sed -i "s/embydomain/$content2/g" /etc/nginx/sites-available/emby2
+sudo sed -i "s|embydomain|$content2|g" /etc/nginx/sites-available/emby2
 if [ $? -ne 0 ]; then
     echo "反代的域名替换失败，请检查文件路径和权限。" >&2
     exit 1

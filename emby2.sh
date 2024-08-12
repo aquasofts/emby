@@ -9,7 +9,8 @@ if command -v nginx >/dev/null 2>&1; then
 else
     sudo apt-get install nginx -y
     if [ $? -ne 0 ]; then
-        echo "nginx安装失败，请检查您的系统是否安装apt。(请执行sudo apt update && sudo apt upgrade -y)" >&2
+        echo "nginx安装失败，请检查您的系统是否安装apt。" >&2
+        echo "可执行 sudo apt update && sudo apt upgrade -y 来安装相关环境"
         exit 1
     fi
 fi

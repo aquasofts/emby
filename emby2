@@ -12,8 +12,8 @@ server {
 
     ssl_session_timeout 30m;
     ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
-    ssl_certificate "fullchain";
-    ssl_certificate_key "privkey";
+    ssl_certificate "jjkk";
+    ssl_certificate_key "hhjj";
     ssl_session_cache shared:SSL:10m;
 
     client_max_body_size 100M;

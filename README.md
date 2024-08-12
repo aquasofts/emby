@@ -16,7 +16,7 @@
 
 4.本脚本仅供学习交流使用，不提供任何资源，请勿用于非法用途，否则后果自负。
 
-5.感谢 [x-ui](https://github.com/FranzKafkaYu/x-ui/) 项目中的acme相关代码
+5.感谢 [x-ui](https://github.com/FranzKafkaYu/x-ui/) [acme1key.sh](https://github.com/tlxhl/acme-1key/blob/master/acme1key.sh) 项目中的acme相关代码
 
 6.如果遇到如图所示界面，直接回车即可
 

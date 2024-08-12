@@ -1,5 +1,28 @@
 #!/bin/bash
 
+RED="\033[31m"
+GREEN="\033[32m"
+YELLOW="\033[33m"
+PLAIN='\033[0m'
+
+red(){
+    echo -e "\033[31m\033[01m$1\033[0m"
+}
+
+green(){
+    echo -e "\033[32m\033[01m$1\033[0m"
+}
+
+yellow(){
+    echo -e "\033[33m\033[01m$1\033[0m"
+}
+
+REGEX=("debian" "ubuntu" "centos|red hat|kernel|oracle linux|alma|rocky" "'amazon linux'")
+RELEASE=("Debian" "Ubuntu" "CentOS" "CentOS")
+PACKAGE_UPDATE=("apt-get -y update" "apt-get -y update" "yum -y update" "yum -y update")
+PACKAGE_INSTALL=("apt -y install" "apt -y install" "yum -y install" "yum -y install")
+PACKAGE_UNINSTALL=("apt -y autoremove" "apt -y autoremove" "yum -y autoremove" "yum -y autoremove")
+
 #清除环境
 apt --fix-broken install
 
@@ -9,13 +32,13 @@ if command -v nginx >/dev/null 2>&1; then
 else
     sudo apt-get install nginx -y
     if [ $? -ne 0 ]; then
-        echo "nginx安装失败，请检查您的系统是否安装apt。(请执行sudo apt update && sudo apt upgrade -y)" >&2
+        echo "nginx安装失败，请检查您的系统是否安装apt。" >&2
+        echo "可执行 sudo apt update && sudo apt upgrade -y 来安装相关环境"
         exit 1
     fi
 fi
 
 #安装acme.sh
-install_acme(){
     [[ ! $SYSTEM == "CentOS" ]] && ${PACKAGE_UPDATE[int]}
     [[ -z $(type -P curl) ]] && ${PACKAGE_INSTALL[int]} curl
     [[ -z $(type -P wget) ]] && ${PACKAGE_INSTALL[int]} wget
@@ -37,7 +60,6 @@ install_acme(){
         yellow "2. 脚本可能跟不上时代，建议截图发布到GitHub Issues或TG群询问"
     fi
     back2menu
-}
 
 # nginx配置文件下载地址
 url="https://raw.githubusercontent.com/aquasofts/emby/main/emby3"
@@ -70,57 +92,78 @@ fi
 # 提示用户操作完成
 echo "文件已拉取完成"
 
-getSingleCert(){
-    [[ -z $(~/.acme.sh/acme.sh -v 2>/dev/null) ]] && red "未安装acme.sh，无法执行操作" && exit 1
-    check_80
-    WARPv4Status=$(curl -s4m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-    WARPv6Status=$(curl -s6m8 https://www.cloudflare.com/cdn-cgi/trace -k | grep warp | cut -d= -f2)
-    ipv4=$(curl -s4m8 https://ip.gs)
-    ipv6=$(curl -s6m8 https://ip.gs)
-    realip=$(curl -sm8 http://ip.sb)
-    # 提示用户输入自己的域名
-    read -rp "请输入解析完成的域名:" domain
-    [[ -z $domain ]] && red "未输入域名，无法执行操作！" && exit 1
-    green "已输入的域名：$domain" && sleep 1
-    domainIP=$(curl -sm8 ipget.net/?ip=misaka.sama."$domain")
-    if [[ -n $(echo $domainIP | grep nginx) ]]; then
-        domainIP=$(curl -sm8 ipget.net/?ip="$domain")
-        if [[ $WARPv4Status =~ on|plus ]] || [[ $WARPv6Status =~ on|plus ]]; then
-            if [[ -n $(echo $realip | grep ":") ]]; then
-                bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 --listen-v6
-            else
-                bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256
-            fi
-        else
-            if [[ $domainIP == $ipv6 ]]; then
-                bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256 --listen-v6
-            fi
-            if [[ $domainIP == $ipv4 ]]; then
-                bash ~/.acme.sh/acme.sh --issue -d ${domain} --standalone -k ec-256
-            fi
-        fi
-
-        if [[ -n $(echo $domainIP | grep nginx) ]]; then
-            yellow "域名解析无效，请检查域名是否填写正确或稍等几分钟等待解析完成再执行脚本"
-            exit 1
-        elif [[ -n $(echo $domainIP | grep ":") || -n $(echo $domainIP | grep ".") ]]; then
-            if [[ $domainIP != $ipv4 ]] && [[ $domainIP != $ipv6 ]] && [[ $domainIP != $realip ]]; then
-                green "${domain} 解析结果：（$domainIP）"
-                red "当前域名解析的IP与当前VPS使用的真实IP不匹配"
-                green "建议如下："
-                yellow "1. 请确保CloudFlare小云朵为关闭状态(仅限DNS)，其他域名解析网站设置同理"
-                yellow "2. 请检查DNS解析设置的IP是否为VPS的真实IP"
-                yellow "3. 脚本可能跟不上时代，建议截图发布到GitHub Issues或TG群询问"
-                exit 1
-            fi
-        fi
+    #install socat second
+    if [[ x"${release}" == x"centos" ]]; then
+        yum install socat -y
     else
-        red "疑似泛域名解析，请使用泛域名申请模式"
-        back2menu
+        apt install socat -y
     fi
-    bash ~/.acme.sh/acme.sh --install-cert -d ${domain} --key-file /root/private.key --fullchain-file /root/cert.crt --ecc
-    checktls
-}
+    if [ $? -ne 0 ]; then
+        LOGE "无法安装socat,请检查错误日志"
+        exit 1
+    else
+        LOGI "socat安装成功..."
+    fi
+    #creat a directory for install cert
+    certPath=/root/cert
+    if [ ! -d "$certPath" ]; then
+        mkdir $certPath
+    fi
+    #get the domain here,and we need verify it
+    local domain=""
+    read -p "请输入你的域名:" domain
+    LOGD "你输入的域名为:${domain},正在进行域名合法性校验..."
+    #here we need to judge whether there exists cert already
+    local currentCert=$(~/.acme.sh/acme.sh --list | grep ${domain} | wc -l)
+    if [ ${currentCert} -ne 0 ]; then
+        local certInfo=$(~/.acme.sh/acme.sh --list)
+        LOGE "域名合法性校验失败,当前环境已有对应域名证书,不可重复申请,当前证书详情:"
+        LOGI "$certInfo"
+        exit 1
+    else
+        LOGI "域名合法性校验通过..."
+    fi
+    #get needed port here
+    local WebPort=80
+    read -p "请输入你所希望使用的端口,如回车将使用默认80端口:" WebPort
+    if [[ ${WebPort} -gt 65535 || ${WebPort} -lt 1 ]]; then
+        LOGE "你所选择的端口${WebPort}为无效值,将使用默认80端口进行申请"
+    fi
+    LOGI "将会使用${WebPort}进行证书申请,请确保端口处于开放状态..."
+    #NOTE:This should be handled by user
+    #open the port and kill the occupied progress
+    ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
+    ~/.acme.sh/acme.sh --issue -d ${domain} --standalone --httpport ${WebPort}
+    if [ $? -ne 0 ]; then
+        LOGE "证书申请失败,原因请参见报错信息"
+        rm -rf ~/.acme.sh/${domain}
+        exit 1
+    else
+        LOGI "证书申请成功,开始安装证书..."
+    fi
+    #install cert
+    ~/.acme.sh/acme.sh --installcert -d ${domain} --ca-file /root/cert/ca.cer \
+        --cert-file /root/cert/${domain}.cer --key-file /root/cert/${domain}.key \
+        --fullchain-file /root/cert/fullchain.cer
+
+    if [ $? -ne 0 ]; then
+        LOGE "证书安装失败,脚本退出"
+        rm -rf ~/.acme.sh/${domain}
+        exit 1
+    else
+        LOGI "证书安装成功,开启自动更新..."
+    fi
+    ~/.acme.sh/acme.sh --upgrade --auto-upgrade
+    if [ $? -ne 0 ]; then
+        LOGE "自动更新设置失败,脚本退出"
+        ls -lah cert
+        chmod 755 $certPath
+        exit 1
+    else
+        LOGI "证书已安装且已开启自动更新,具体信息如下"
+        ls -lah cert
+        chmod 755 $certPath
+    fi
 
 # 替换/etc/nginx/sites-available/emby3中的yourdomain为用户输入的域名
 sudo sed -i "s|yourdomain|$domain|g" /etc/nginx/sites-available/emby3
@@ -137,6 +180,36 @@ read -r content2
 sudo sed -i "s|embydomain|$content2|g" /etc/nginx/sites-available/emby3
 if [ $? -ne 0 ]; then
     echo "反代的域名替换失败，请检查文件路径和权限。" >&2
+    exit 1
+fi
+
+# 替换/etc/nginx/sites-available/emby3中的jjkk为证书公钥目录
+sudo sed -i "s|jjkk|$domain|g" /etc/nginx/sites-available/emby3
+if [ $? -ne 0 ]; then
+    echo "证书公钥替换失败，请检查文件路径和权限。" >&2
+    exit 1
+fi
+
+# 提示用户输入证书目录
+echo "请输入您域名证书私钥目录：(例如: /root/privkey.pem)"
+read -r content4
+
+# 替换/etc/nginx/sites-available/emby3中的hhjj为证书公钥目录
+sudo sed -i "s|hhjj|$domain|g" /etc/nginx/sites-available/emby3
+if [ $? -ne 0 ]; then
+    echo "证书私钥替换失败，请检查文件路径和权限。" >&2
+    exit 1
+fi
+
+# 链接配置
+if [ -f /etc/nginx/sites-available/emby3 ]; then
+    sudo ln -sf /etc/nginx/sites-available/emby3 /etc/nginx/sites-enabled/
+    if [ $? -ne 0 ]; then
+        echo "配置链接失败，请检查文件路径和权限。" >&2
+        exit 1
+    fi
+else
+    echo "/etc/nginx/sites-available/emby3 文件不存在。" >&2
     exit 1
 fi
 

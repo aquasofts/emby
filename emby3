@@ -12,8 +12,8 @@ server {
 
     ssl_session_timeout 30m;
     ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
-    ssl_certificate "/root/cert.crt";
-    ssl_certificate_key "/root/private.key";
+    ssl_certificate "/root/.acme.sh/jjkk_ecc/jjkk.cer";
+    ssl_certificate_key "/root/.acme.sh/hhjj_ecc/hhjj.key";
     ssl_session_cache shared:SSL:10m;
 
     client_max_body_size 100M;

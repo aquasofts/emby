@@ -20,7 +20,9 @@
 
 6.感谢 [x-ui](https://github.com/FranzKafkaYu/x-ui/) [acme1key.sh](https://github.com/tlxhl/acme-1key/blob/master/acme1key.sh) 项目中的acme相关代码
 
-7.如果遇到如图所示界面，直接回车即可
+7.期待有大佬可以把端口申请证书修改为nginx模式申请证书，这样可以解决端口占用问题，我技术力不够。。。
+
+8.如果遇到如图所示界面，直接回车即可
 
 ![image](https://github.com/aquasofts/emby/blob/main/image.png)
 

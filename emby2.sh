@@ -81,7 +81,7 @@ fi
 
 # 链接配置
 if [ -f /etc/nginx/sites-available/emby2 ]; then
-    sudo ln -s /etc/nginx/sites-available/emby2 /etc/nginx/sites-enabled/
+    sudo ln -sf /etc/nginx/sites-available/emby2 /etc/nginx/sites-enabled/
     if [ $? -ne 0 ]; then
         echo "配置链接失败，请检查文件路径和权限。" >&2
         exit 1

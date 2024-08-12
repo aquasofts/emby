@@ -47,7 +47,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # 提示用户emby域名
-echo "请输入您需要反代的域名："
+echo "请输入您需要反代的域名：(仅填写域名，例如"baidu.com")"
 read -r content2
 
 # 替换/etc/nginx/sites-available/emby中的embydomain为用户输入的emby域名

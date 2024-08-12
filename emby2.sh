@@ -62,7 +62,7 @@ echo "请输入您域名证书公钥目录：(例如: /root/fullchain.pem)"
 read -r content3
 
 # 替换/etc/nginx/sites-available/emby2中的fullchain为用户输入的证书公钥目录
-sudo sed -i "s/fullchain/$content3/g" /etc/nginx/sites-available/emby2
+sudo sed -i "s|fullchain|$content3|g" /etc/nginx/sites-available/emby2
 if [ $? -ne 0 ]; then
     echo "证书公钥替换失败，请检查文件路径和权限。" >&2
     exit 1
@@ -73,7 +73,7 @@ echo "请输入您域名证书私钥目录：(例如: /root/privkey.pem)"
 read -r content4
 
 # 替换/etc/nginx/sites-available/emby2中的privkey为用户输入的证书公钥目录
-sudo sed -i "s/privkey/$content4/g" /etc/nginx/sites-available/emby2
+sudo sed -i "s|privkey|$content4|g" /etc/nginx/sites-available/emby2
 if [ $? -ne 0 ]; then
     echo "证书私钥替换失败，请检查文件路径和权限。" >&2
     exit 1

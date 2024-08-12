@@ -7,7 +7,7 @@
 `wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/main/home.sh && chmod +x home.sh && ./home.sh`
 
 ### 啰嗦一句
-1.由于我的技术力有限，如果您想要使用 https 协议，请提前准备好相关域名证书。(期待有大佬帮忙~)
+1.由于我的技术力有限，如果您想要使用 https 协议，请提前准备好相关域名证书。(期待有大佬帮忙写acme相关内容~)
 
 2.安装nginx过程可能会有点慢，请耐心等待。所有选项都输入"y"即可。
 

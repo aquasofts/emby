@@ -125,7 +125,7 @@ echo "文件已拉取完成"
     fi
     #get needed port here
     local WebPort=80
-    read -p "请输入你所希望使用的端口,如回车将使用默认80端口:" WebPort
+    read -p "请输入你所希望使用的端口,如回车将使用默认80端口(此端口需要未被占用):" WebPort
     if [[ ${WebPort} -gt 65535 || ${WebPort} -lt 1 ]]; then
         LOGE "你所选择的端口${WebPort}为无效值,将使用默认80端口进行申请"
     fi

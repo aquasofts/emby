@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# 检查并更新apt
-if command -v apt >/dev/null 2>&1; then
-    sudo apt update && sudo apt upgrade -y
-else
-    echo "apt命令未找到，请检查您的系统环境。" >&2
-    exit 1
-fi
-
 #清除环境
 apt --fix-broken install
 
@@ -17,7 +9,7 @@ if command -v nginx >/dev/null 2>&1; then
 else
     sudo apt-get install nginx -y
     if [ $? -ne 0 ]; then
-        echo "nginx安装失败，请检查您的系统环境。" >&2
+        echo "nginx安装失败，请检查您的系统是否安装apt。(请执行sudo apt update && sudo apt upgrade -y)" >&2
         exit 1
     fi
 fi

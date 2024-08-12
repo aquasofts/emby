@@ -18,7 +18,7 @@ fi
 url="https://raw.githubusercontent.com/aquasofts/emby/main/emby"
 
 # 目标文件路径
-destination="/etc/nginx/sites-available/emby"
+destination="/etc/nginx/sites-available/"
 
 # 使用wget命令下载文件到目标文件路径
 if command -v wget >/dev/null 2>&1; then

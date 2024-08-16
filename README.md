@@ -4,7 +4,7 @@
 ### 使用方法
 一键脚本：
 
-`wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/main/home.sh && chmod +x home.sh && ./home.sh`
+`wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/main/install.sh && chmod +x install.sh && ./install.sh`
 
 ### 啰嗦一句
 

@@ -6,6 +6,10 @@
 
 `wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/main/install.sh && chmod +x install.sh && ./install.sh`
 
+内地的机器可使用gitee:
+
+`wget -N --no-check-certificate https://gitee.com/aquasoft/emby/raw/main/install.sh && chmod +x install.sh && ./install.sh`
+
 ### 啰嗦一句
 
 1.安装nginx过程可能会有点慢，请耐心等待。所有选项都输入"y"即可。

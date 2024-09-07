@@ -144,7 +144,7 @@ install_acme(){
 
 download_file(){
 # nginx配置文件下载地址
-url="https://raw.githubusercontent.com/aquasofts/emby/main/file/emby3sep"
+url="https://raw.githubusercontent.com/aquasofts/emby/main/file/separate/emby3sep"
 
 # 目标文件路径（包括文件名）
 destination="/etc/nginx/sites-available/emby3sep"

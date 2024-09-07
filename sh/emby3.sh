@@ -130,7 +130,7 @@ install_acme(){
     curl https://get.acme.sh | sh -s email=$acmeEmail
     source ~/.bashrc
     bash ~/.acme.sh/acme.sh --upgrade --auto-upgrade
-    bash ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
+    bash ~/.acme.sh/acme.sh --set-default-ca --server zerossl
     if [[ -n $(~/.acme.sh/acme.sh -v 2>/dev/null) ]]; then
         green "Acme.sh证书申请脚本安装成功！"
     else
@@ -201,7 +201,7 @@ get_cert(){
     LOGI "将会使用${WebPort}进行证书申请,请确保端口处于开放状态..."
     #NOTE:This should be handled by user
     #open the port and kill the occupied progress
-    ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
+    ~/.acme.sh/acme.sh --set-default-ca --server zerossl
     ~/.acme.sh/acme.sh --issue -d ${domain} --standalone --httpport ${WebPort}
     if [ $? -ne 0 ]; then
         red "证书申请失败,原因请参见报错信息"

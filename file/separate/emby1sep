@@ -18,6 +18,7 @@ server {
     location / {
         proxy_pass https://embydomain:443; # 你要反代的emby服务器的域名
         proxy_intercept_errors on;
+        sub_filter "ggdd" "weasd";
     }
 
     # jellyfin-mpv-shim 客户端， 请求 /Videos/<item_Id>/stream
@@ -35,12 +36,6 @@ server {
     proxy_pass https://embydomain:443;
     rewrite ^/emby/videos/(?<item_id>\d+)/original\.\w+$ /Videos/$item_id/stream?static=true last;
   }
-  
-    location / {
-        proxy_pass https://ggdd:443; # 你要反代的emby服务器的域名
-        proxy_intercept_errors on;
-        sub_filter "ggdd" "weasd";
-    }
 }
 
 # stream http
@@ -74,4 +69,9 @@ server {
     proxy_pass https://embydomain:443;
     rewrite ^/emby/videos/(?<item_id>\d+)/original\.\w+$ /Videos/$item_id/stream?static=true last;
   }
+    
+  location / {
+        proxy_pass https://ggdd:443; # 你要反代的emby服务器的域名
+        proxy_intercept_errors on;
+    }
 }

@@ -30,12 +30,7 @@ server {
     location / {
         proxy_pass https://embydomain:443; # 你要反代的emby服务器的域名
         proxy_intercept_errors on;
-    }
-    
-        location / {
-        proxy_pass https://ggdd:443; # 你要反代的emby服务器的域名
-        proxy_intercept_errors on;
-        sub_filter "ggdd" "weasd";
+                sub_filter "ggdd" "weasd";
     }
 }
 
@@ -70,4 +65,10 @@ server {
 
     proxy_ssl_name ggdd; # 你要反代的emby服务器的域名
     proxy_ssl_server_name on;
+    
+    location / {
+        proxy_pass https://ggdd:443; # 你要反代的emby服务器的域名
+        proxy_intercept_errors on;
+
+    }
 }

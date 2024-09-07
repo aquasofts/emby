@@ -144,10 +144,10 @@ install_acme(){
 
 download_file(){
 # nginx配置文件下载地址
-url="https://raw.githubusercontent.com/aquasofts/emby/main/file/emby4"
+url="https://raw.githubusercontent.com/aquasofts/emby/main/file/emby3sep"
 
 # 目标文件路径（包括文件名）
-destination="/etc/nginx/sites-available/emby4"
+destination="/etc/nginx/sites-available/emby3sep"
 
 # 使用wget命令下载文件到目标文件路径
 if command -v wget >/dev/null 2>&1; then
@@ -296,8 +296,8 @@ get_stream_cert(){
 }
 
 Replace(){
-# 替换/etc/nginx/sites-available/emby4中的yourdomain为用户输入的域名
-sudo sed -i "s|yourdomain|$domain|g" /etc/nginx/sites-available/emby4
+# 替换/etc/nginx/sites-available/emby3sep中的yourdomain为用户输入的域名
+sudo sed -i "s|yourdomain|$domain|g" /etc/nginx/sites-available/emby3sep
 if [ $? -ne 0 ]; then
     red "域名替换失败，请检查文件路径和权限。" >&2
     exit 1
@@ -307,22 +307,22 @@ fi
 echo "请输入您需要反代的域名：(仅填写域名，例如"baidu.com")"
 read -r content2
 
-# 替换/etc/nginx/sites-available/emby4中的embydomain为用户输入的emby域名
-sudo sed -i "s|embydomain|$content2|g" /etc/nginx/sites-available/emby4
+# 替换/etc/nginx/sites-available/emby3sep中的embydomain为用户输入的emby域名
+sudo sed -i "s|embydomain|$content2|g" /etc/nginx/sites-available/emby3sep
 if [ $? -ne 0 ]; then
     echo "反代的域名替换失败，请检查文件路径和权限。" >&2
     exit 1
 fi
 
-# 替换/etc/nginx/sites-available/emby4中的jjkk为证书公钥目录
-sudo sed -i "s|jjkk|$domain|g" /etc/nginx/sites-available/emby4
+# 替换/etc/nginx/sites-available/emby3sep中的jjkk为证书公钥目录
+sudo sed -i "s|jjkk|$domain|g" /etc/nginx/sites-available/emby3sep
 if [ $? -ne 0 ]; then
     echo "证书公钥替换失败，请检查文件路径和权限。" >&2
     exit 1
 fi
 
-# 替换/etc/nginx/sites-available/emby4中的hhjj为证书公钥目录
-sudo sed -i "s|hhjj|$domain|g" /etc/nginx/sites-available/emby4
+# 替换/etc/nginx/sites-available/emby3sep中的hhjj为证书公钥目录
+sudo sed -i "s|hhjj|$domain|g" /etc/nginx/sites-available/emby3sep
 if [ $? -ne 0 ]; then
     echo "证书私钥替换失败，请检查文件路径和权限。" >&2
     exit 1
@@ -330,8 +330,8 @@ fi
 }
 
 Replace_stream(){
-# 替换/etc/nginx/sites-available/emby4中的weasd为用户输入的域名
-sudo sed -i "s|weasd|$aall|g" /etc/nginx/sites-available/emby4
+# 替换/etc/nginx/sites-available/emby3sep中的weasd为用户输入的域名
+sudo sed -i "s|weasd|$aall|g" /etc/nginx/sites-available/emby3sep
 if [ $? -ne 0 ]; then
     red "域名替换失败，请检查文件路径和权限。" >&2
     exit 1
@@ -341,22 +341,22 @@ fi
 echo "请输入您需要反代的推流域名：(仅填写域名，例如"baidu.com")"
 read -r tuiliu
 
-# 替换/etc/nginx/sites-available/emby4中的embydomain为用户输入的emby域名
-sudo sed -i "s|ggdd|$tuiliu|g" /etc/nginx/sites-available/emby4
+# 替换/etc/nginx/sites-available/emby3sep中的embydomain为用户输入的emby域名
+sudo sed -i "s|ggdd|$tuiliu|g" /etc/nginx/sites-available/emby3sep
 if [ $? -ne 0 ]; then
     echo "反代的域名替换失败，请检查文件路径和权限。" >&2
     exit 1
 fi
 
-# 替换/etc/nginx/sites-available/emby4中的qqww为证书公钥目录
-sudo sed -i "s|qqww|$aall|g" /etc/nginx/sites-available/emby4
+# 替换/etc/nginx/sites-available/emby3sep中的qqww为证书公钥目录
+sudo sed -i "s|qqww|$aall|g" /etc/nginx/sites-available/emby3sep
 if [ $? -ne 0 ]; then
     echo "证书公钥替换失败，请检查文件路径和权限。" >&2
     exit 1
 fi
 
-# 替换/etc/nginx/sites-available/emby4中的hhjj为证书公钥目录
-sudo sed -i "s|eeww|$aall|g" /etc/nginx/sites-available/emby4
+# 替换/etc/nginx/sites-available/emby3sep中的hhjj为证书公钥目录
+sudo sed -i "s|eeww|$aall|g" /etc/nginx/sites-available/emby3sep
 if [ $? -ne 0 ]; then
     echo "证书私钥替换失败，请检查文件路径和权限。" >&2
     exit 1
@@ -365,14 +365,14 @@ fi
 
 Link(){
 # 链接配置
-if [ -f /etc/nginx/sites-available/emby4 ]; then
-    sudo ln -sf /etc/nginx/sites-available/emby4 /etc/nginx/sites-enabled/
+if [ -f /etc/nginx/sites-available/emby3sep ]; then
+    sudo ln -sf /etc/nginx/sites-available/emby3sep /etc/nginx/sites-enabled/
     if [ $? -ne 0 ]; then
         echo "配置链接失败，请检查文件路径和权限。" >&2
         exit 1
     fi
 else
-    echo "/etc/nginx/sites-available/emby4 文件不存在。" >&2
+    echo "/etc/nginx/sites-available/emby3sep 文件不存在。" >&2
     exit 1
 fi
 }

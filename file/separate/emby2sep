@@ -1,0 +1,73 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name yourdomain; #
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name yourdomain; # 你的域名
+
+    ssl_session_timeout 30m;
+    ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_certificate "jjkk";
+    ssl_certificate_key "hhjj";
+    ssl_session_cache shared:SSL:10m;
+
+    client_max_body_size 100M;
+
+    add_header 'Referrer-Policy' 'origin-when-cross-origin';
+    add_header Strict-Transport-Security "max-age=15552000; preload" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    proxy_ssl_name embydomain; # 你要反代的emby服务器的域名
+    proxy_ssl_server_name on;
+
+    location / {
+        proxy_pass https://embydomain:443; # 你要反代的emby服务器的域名
+        proxy_intercept_errors on;
+    }
+    
+        location / {
+        proxy_pass https://ggdd:443; # 你要反代的emby服务器的域名
+        proxy_intercept_errors on;
+        sub_filter "ggdd" "weasd";
+    }
+}
+
+#stream http
+server {
+    listen 80;
+    listen [::]:80;
+    server_name weasd; #
+    return 301 https://$host$request_uri;
+}
+
+# stream https
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name weasd; # 你的域名
+
+    ssl_session_timeout 30m;
+    ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
+    ssl_certificate "qqww";
+    ssl_certificate_key "eeww";
+    ssl_session_cache shared:SSL:10m;
+
+    client_max_body_size 100M;
+
+
+    add_header 'Referrer-Policy' 'origin-when-cross-origin';
+    add_header Strict-Transport-Security "max-age=15552000; preload" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    proxy_ssl_name ggdd; # 你要反代的emby服务器的域名
+    proxy_ssl_server_name on;
+}

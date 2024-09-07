@@ -1,4 +1,5 @@
 <h1>一键反代emby脚本</h1>
+
 运行本脚本将会自动对您的自建emby服务器进行反代，并自动配置nginx，实现emby服务器的远程访问，随时随地查看您的媒体。
 
 ### 使用方法
@@ -6,9 +7,25 @@
 
 `wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/main/install.sh && chmod +x install.sh && ./install.sh`
 
-内地的机器可使用gitee:
+内地的机器可使用gitee（存在版本不同步问题，随缘维护）:
 
 `wget -N --no-check-certificate https://gitee.com/aquasoft/emby/raw/main/install.sh && chmod +x install.sh && ./install.sh`
+
+### 重大更新日志
+
+2024-08-10
+
+项目正式启动
+
+2024-08-12
+
+添加了emby的端口自动申请证书功能，无需手动申请证书。
+
+脚本初步完成
+
+2024-09-07
+
+更新了对前后端分离版本的emby服务端的支持
 
 ### 啰嗦一句
 

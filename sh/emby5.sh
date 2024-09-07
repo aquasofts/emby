@@ -402,7 +402,9 @@ install_cron
 install_acme
 download_file
 get_cert
+get_stream_cert
 Replace
+Replace_stream
 Link
 restart_nginx
 result

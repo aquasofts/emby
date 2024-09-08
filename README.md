@@ -27,6 +27,26 @@
 
 · 更新了对前后端分离版本的emby服务端的支持
 
+### 如何卸载
+
+最近有点忙，随缘更新卸载相关脚本，在卸载脚本推出之前请自行手动删除相关文件。
+
+· 请删除以下目录中与您的项目无关的文件 
+
+`/etc/nginx/sites-available`
+
+`/etc/nginx/sites-enabled`
+
+· 或者直接执行nginx卸载脚本
+
+`wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/uninstallnginx/main/uninstall.sh && chmod +x uninstall.sh && ./uninstall.sh`
+
+· 随后请删除以下目录中与您的项目无关的文件，如果未部署其他项目可直接删除整个文件夹
+
+`/root/.acme.sh`
+
+`/root/cert`
+
 ### 啰嗦一句
 
 1.安装nginx过程可能会有点慢，请耐心等待。所有选项都输入"y"即可。

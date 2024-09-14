@@ -1,5 +1,7 @@
 <h1>一键反代emby脚本</h1>
 
+[简体中文](https://raw.githubusercontent.com/aquasofts/emby/main/README.md) | [English](https://raw.githubusercontent.com/aquasofts/emby/main/README_EN.md)
+
 运行本脚本将会自动对您的自建emby服务器进行反代，并自动配置nginx，实现emby服务器的远程访问，随时随地查看您的媒体。
 
 ### 使用方法

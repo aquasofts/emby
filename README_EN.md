@@ -1,6 +1,6 @@
 <h1>One-Click Reverse Proxy Emby Script</h1>
 
-[简体中文](https://raw.githubusercontent.com/aquasofts/emby/main/README.md) | [English](https://raw.githubusercontent.com/aquasofts/emby/main/README_EN.md)
+[简体中文](https://github.com/aquasofts/emby/blob/main/README.md) | [English](https://github.com/aquasofts/emby/blob/main/README_EN.md)
 
 Running this script will automatically set up a reverse proxy for your self-hosted Emby server and configure Nginx for remote access to your Emby server, allowing you to view your media anytime, anywhere.
 

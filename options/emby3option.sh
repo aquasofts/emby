@@ -7,7 +7,7 @@ read input
 if [ "$input" == "1" ]; then
     wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/main/sh/emby3.sh && chmod +x emby3.sh && ./emby3.sh
 elif [ "$input" == "2" ]; then
-    wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/main/sh/separate/emby3sep.sh && chmod +x emby3sep.sh && ./emby3sep.sh
+    wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/main/sh/RewriteorReplacement/opautohttps.sh && chmod +x opautohttps.sh && ./opautohttps.sh
 else
     echo "无效输入，请输入 '1' 或 '2' "
 fi

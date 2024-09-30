@@ -32,7 +32,7 @@ server {
     location / {
         proxy_pass https://embydomain:443; # 你要反代的emby服务器的地址
         proxy_intercept_errors on;
-                sub_filter "ggdd" "weasd";
+        sub_filter "ggdd" "weasd";
     }
 
     # jellyfin-mpv-shim 客户端， 请求 /Videos/<item_Id>/stream

@@ -7,11 +7,9 @@
 ### 使用方法
 一键脚本：
 
-`wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/main/install.sh && chmod +x install.sh && ./install.sh`
-
-内地的机器可使用gitee（存在版本不同步问题，随缘维护）:
-
-`wget -N --no-check-certificate https://gitee.com/aquasoft/emby/raw/main/install.sh && chmod +x install.sh && ./install.sh`
+```
+wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/main/install.sh && chmod +x install.sh && ./install.sh
+```
 
 ### 重大更新日志
 

@@ -53,6 +53,8 @@ wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/
 
 ### 啰嗦一句
 
+0.本脚本暂时停止维护（高考），有无法解决的问题可使用[sakullla]([sakullla](https://github.com/sakullla))的脚本 [sakullla/nginx-reverse-emby](https://github.com/sakullla/nginx-reverse-emby)
+
 1.安装nginx过程可能会有点慢，请耐心等待。所有选项都输入"y"即可。
 
 2.本脚本需要全新系统安装环境，非全新环境可能会导致脚本无法使用

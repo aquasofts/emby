@@ -144,10 +144,10 @@ install_acme(){
 
 download_file(){
 # nginx配置文件下载地址
-url="https://raw.githubusercontent.com/aquasofts/emby/main/file/emby3"
+url="https://raw.githubusercontent.com/aquasofts/emby/main/file/separate/emby3sep"
 
 # 目标文件路径（包括文件名）
-destination="/etc/nginx/sites-available/emby3"
+destination="/etc/nginx/sites-available/emby3sep"
 
 # 使用wget命令下载文件到目标文件路径
 if command -v wget >/dev/null 2>&1; then
@@ -235,9 +235,69 @@ get_cert(){
     fi
 }
 
+get_stream_cert(){
+    #stop nginx
+    sudo service nginx stop
+    #get the domain here,and we need verify it
+    export aall=""
+    read -p "请输入你的第二个域名:" aall
+    LOGD "你输入的域名为:${aall},正在进行域名合法性校验..."
+    #here we need to judge whether there exists cert already
+    local currentCert=$(~/.acme.sh/acme.sh --list | grep ${aall} | wc -l)
+    if [ ${currentCert} -ne 0 ]; then
+        local certInfo=$(~/.acme.sh/acme.sh --list)
+    # 使用 rm -rf 删除 /root/${domain}_ecc 目录
+    green "已有证书，请使用脚本2，或删除相关目录重新申请，为避免滥用本处不提供教程"
+    else
+        green "域名合法性校验通过..."
+    fi
+
+    #get needed port here
+    local WebPort=80
+    read -p "请输入你所希望使用的端口(推荐使用80端口):" WebPort
+    if [[ ${WebPort} -gt 65535 || ${WebPort} -lt 1 ]]; then
+        green "你所选择的端口${WebPort}为无效值,将使用默认80端口进行申请"
+    fi
+    LOGI "将会使用${WebPort}进行证书申请,请确保端口处于开放状态..."
+    #NOTE:This should be handled by user
+    #open the port and kill the occupied progress
+    ~/.acme.sh/acme.sh --set-default-ca --server zerossl
+    ~/.acme.sh/acme.sh --issue -d ${aall} --standalone --httpport ${WebPort}
+    if [ $? -ne 0 ]; then
+        red "证书申请失败,原因请参见报错信息"
+        rm -rf ~/.acme.sh/${aall}
+        exit 1
+    else
+        green "证书申请成功,开始安装证书..."
+    fi
+    #install cert
+    ~/.acme.sh/acme.sh --installcert -d ${aall} --ca-file /root/cert/ca.cer \
+        --cert-file /root/cert/${aall}.cer --key-file /root/cert/${aall}.key \
+        --fullchain-file /root/cert/fullchain.cer
+
+    if [ $? -ne 0 ]; then
+        LOGE "证书安装失败,脚本退出"
+        rm -rf ~/.acme.sh/${aall}
+        exit 1
+    else
+        LOGI "证书安装成功,开启自动更新..."
+    fi
+    ~/.acme.sh/acme.sh --upgrade --auto-upgrade
+    if [ $? -ne 0 ]; then
+        LOGE "自动更新设置失败,脚本退出"
+        ls -lah cert
+        chmod 755 $certPath
+        exit 1
+    else
+        LOGI "证书已安装且已开启自动更新,具体信息如下"
+        ls -lah cert
+        chmod 755 $certPath
+    fi
+}
+
 Replace(){
-# 替换/etc/nginx/sites-available/emby3中的yourdomain为用户输入的域名
-sudo sed -i "s|yourdomain|$domain|g" /etc/nginx/sites-available/emby3
+# 替换/etc/nginx/sites-available/emby3sep中的yourdomain为用户输入的域名
+sudo sed -i "s|yourdomain|$domain|g" /etc/nginx/sites-available/emby3sep
 if [ $? -ne 0 ]; then
     red "域名替换失败，请检查文件路径和权限。" >&2
     exit 1
@@ -247,22 +307,56 @@ fi
 echo "请输入您需要反代的域名：(仅填写域名，例如"baidu.com")"
 read -r content2
 
-# 替换/etc/nginx/sites-available/emby3中的embydomain为用户输入的emby域名
-sudo sed -i "s|embydomain|$content2|g" /etc/nginx/sites-available/emby3
+# 替换/etc/nginx/sites-available/emby3sep中的embydomain为用户输入的emby域名
+sudo sed -i "s|embydomain|$content2|g" /etc/nginx/sites-available/emby3sep
 if [ $? -ne 0 ]; then
     echo "反代的域名替换失败，请检查文件路径和权限。" >&2
     exit 1
 fi
 
-# 替换/etc/nginx/sites-available/emby3中的jjkk为证书公钥目录
-sudo sed -i "s|jjkk|$domain|g" /etc/nginx/sites-available/emby3
+# 替换/etc/nginx/sites-available/emby3sep中的jjkk为证书公钥目录
+sudo sed -i "s|jjkk|$domain|g" /etc/nginx/sites-available/emby3sep
 if [ $? -ne 0 ]; then
     echo "证书公钥替换失败，请检查文件路径和权限。" >&2
     exit 1
 fi
 
-# 替换/etc/nginx/sites-available/emby3中的hhjj为证书公钥目录
-sudo sed -i "s|hhjj|$domain|g" /etc/nginx/sites-available/emby3
+# 替换/etc/nginx/sites-available/emby3sep中的hhjj为证书公钥目录
+sudo sed -i "s|hhjj|$domain|g" /etc/nginx/sites-available/emby3sep
+if [ $? -ne 0 ]; then
+    echo "证书私钥替换失败，请检查文件路径和权限。" >&2
+    exit 1
+fi
+}
+
+Replace_stream(){
+# 替换/etc/nginx/sites-available/emby3sep中的weasd为用户输入的域名
+sudo sed -i "s|weasd|$aall|g" /etc/nginx/sites-available/emby3sep
+if [ $? -ne 0 ]; then
+    red "域名替换失败，请检查文件路径和权限。" >&2
+    exit 1
+fi
+
+# 提示用户emby域名
+echo "请输入您需要反代的推流域名：(仅填写域名，例如"baidu.com")"
+read -r tuiliu
+
+# 替换/etc/nginx/sites-available/emby3sep中的embydomain为用户输入的emby域名
+sudo sed -i "s|ggdd|$tuiliu|g" /etc/nginx/sites-available/emby3sep
+if [ $? -ne 0 ]; then
+    echo "反代的域名替换失败，请检查文件路径和权限。" >&2
+    exit 1
+fi
+
+# 替换/etc/nginx/sites-available/emby3sep中的qqww为证书公钥目录
+sudo sed -i "s|qqww|$aall|g" /etc/nginx/sites-available/emby3sep
+if [ $? -ne 0 ]; then
+    echo "证书公钥替换失败，请检查文件路径和权限。" >&2
+    exit 1
+fi
+
+# 替换/etc/nginx/sites-available/emby3sep中的hhjj为证书公钥目录
+sudo sed -i "s|eeww|$aall|g" /etc/nginx/sites-available/emby3sep
 if [ $? -ne 0 ]; then
     echo "证书私钥替换失败，请检查文件路径和权限。" >&2
     exit 1
@@ -271,14 +365,14 @@ fi
 
 Link(){
 # 链接配置
-if [ -f /etc/nginx/sites-available/emby3 ]; then
-    sudo ln -sf /etc/nginx/sites-available/emby3 /etc/nginx/sites-enabled/
+if [ -f /etc/nginx/sites-available/emby3sep ]; then
+    sudo ln -sf /etc/nginx/sites-available/emby3sep /etc/nginx/sites-enabled/
     if [ $? -ne 0 ]; then
         echo "配置链接失败，请检查文件路径和权限。" >&2
         exit 1
     fi
 else
-    echo "/etc/nginx/sites-available/emby3 文件不存在。" >&2
+    echo "/etc/nginx/sites-available/emby3sep 文件不存在。" >&2
     exit 1
 fi
 }
@@ -308,7 +402,9 @@ install_cron
 install_acme
 download_file
 get_cert
+get_stream_cert
 Replace
+Replace_stream
 Link
 restart_nginx
 result

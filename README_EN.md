@@ -1,76 +1,82 @@
-<h1>One-Click Reverse Proxy Emby Script</h1>
+# Emby Nginx Reverse Proxy
 
-[简体中文](https://github.com/aquasofts/emby/blob/main/README.md) | [English](https://github.com/aquasofts/emby/blob/main/README_EN.md)
+A single-file, repeatable installer for an Emby Nginx reverse proxy. It supports regular Emby deployments, split frontend/streaming origins, automatic HTTPS, existing certificates, and HTTP-only setups.
 
-Running this script will automatically reverse proxy your self-hosted Emby server and automatically configure Nginx, enabling remote access to your Emby server, allowing you to access your media anytime, anywhere.
+The installer validates all input, writes the configuration atomically, runs `nginx -t`, and restores the previous configuration if validation or reload fails. Automatic certificates use Certbot's Nginx plugin, so Nginx does not need to be stopped.
 
-### Usage
-One-click script:
+The pre-2.0 implementation is retained under `old/` for reference only and is no longer part of the installation flow.
 
-```
-wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/main/install.sh && chmod +x install.sh && ./install.sh
-```
+## Quick start
 
-### Major Update Logs
+Download the script first so it can be inspected before execution:
 
-2024-08-10
-
-· Project officially started
-
-2024-08-12
-
-· Added automatic certificate generation for Emby’s port, eliminating the need for manual certificate application.
-
-· Script initial version completed
-
-2024-09-07
-
-· Added support for front-end and back-end separated versions of Emby server
-
-2024-09-30
-
-· Updated functionality to only rewrite links in the front-end and back-end separated versions of Emby server, addressing access issues when no domain is specified.
-
-### How to Uninstall
-
-I've been busy lately, so the uninstall script will be updated whenever possible. Before the official uninstall script is released, please manually remove the related files.
-
-· Delete unrelated files in the following directories:
-
-`/etc/nginx/sites-available`
-
-`/etc/nginx/sites-enabled`
-
-· Or execute the Nginx uninstall script:
-
-```
-wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/uninstallnginx/main/uninstall.sh && chmod +x uninstall.sh && ./uninstall.sh
+```bash
+curl -fsSLo install.sh https://raw.githubusercontent.com/aquasofts/emby/main/install.sh
+chmod +x install.sh
+./install.sh
 ```
 
-· After that, delete the unrelated files in the following directories. If no other projects are deployed, you can directly delete the entire folder:
+Non-interactive example:
 
-`/root/.acme.sh`
+```bash
+./install.sh \
+  --domain media.example.com \
+  --upstream http://127.0.0.1:8096 \
+  --tls auto \
+  --email admin@example.com \
+  --yes
+```
 
-`/root/cert`
+Preview the generated Nginx configuration without changing the system:
 
-### A Few Notes
+```bash
+./install.sh \
+  --domain media.example.com \
+  --upstream http://127.0.0.1:8096 \
+  --tls off \
+  --dry-run
+```
 
-1. The Nginx installation process may be slow, so please be patient. For all options, just enter "y".
+## TLS modes
 
-2. This script requires a fresh system installation. Non-fresh systems may cause the script to fail.
+- `--tls auto`: install/use Certbot, obtain a certificate through Nginx, and configure renewal. DNS must point to the server and public ports 80/443 must be reachable.
+- `--tls manual`: use an existing certificate with `--cert /path/fullchain.pem` and `--key /path/privkey.pem`.
+- `--tls off`: listen on HTTP port 80 only, useful behind a CDN/load balancer or on a private network.
 
-3. The script is not encrypted. Every function is well-documented, and there are no security issues. Please feel free to use it. The script is poorly written, so if anyone wants to improve it, feel free to submit modifications!
+Automatic dependency installation explicitly supports Debian 12, Ubuntu 22.04, and newer releases. On other distributions, install Nginx and Certbot first.
 
-4. This script has been tested only on Ubuntu 22 and Debian 12.
+## Split streaming origin
 
-5. This script is for learning and communication purposes only. No resources are provided, and please do not use it for illegal purposes; any consequences are your own responsibility.
+```bash
+./install.sh \
+  --domain media.example.com \
+  --upstream https://api-origin.example.com \
+  --stream-domain stream.example.com \
+  --stream-upstream https://stream-origin.example.com \
+  --tls auto \
+  --email admin@example.com \
+  --yes
+```
 
-6. Thanks to [x-ui](https://github.com/FranzKafkaYu/x-ui/) and [acme1key.sh](https://github.com/tlxhl/acme-1key/) projects for the acme-related code.
+The public stream hostname is substituted in textual responses from the main origin, while media proxying remains unbuffered. In manual TLS mode, `--stream-cert` and `--stream-key` can select a separate certificate; otherwise the main certificate is reused.
 
-7. I hope someone can modify the certificate generation for Nginx mode to solve the port occupation issue. My skills aren't sufficient...
+## Update and uninstall
 
-8. If this script has been helpful to you, consider giving it a star to help others benefit from it.
+Re-run the installer with the desired arguments to update the setup safely.
 
-9. If you encounter a screen like the one shown, just press Enter.
+```bash
+./install.sh --uninstall
+```
 
-![image](https://github.com/aquasofts/emby/blob/main/image.png)
+Uninstall removes only the `emby-proxy` Nginx configuration. It does not remove Nginx, Certbot, certificates, or unrelated sites.
+
+Run `./install.sh --help` for every option.
+
+## Tests
+
+```bash
+bash -n install.sh tests/test.sh
+bash tests/test.sh
+```
+
+The tests use dry-run mode and never touch the system Nginx installation.

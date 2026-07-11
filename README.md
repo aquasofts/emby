@@ -1,77 +1,103 @@
-<h1>一键反代emby脚本</h1>
+# Emby Nginx 反向代理
 
-[简体中文](https://github.com/aquasofts/emby/blob/main/README.md) | [English](https://github.com/aquasofts/emby/blob/main/README_EN.md)
+一个单文件、可重复执行的 Emby 反向代理安装器。支持普通 Emby、前后端/推流分离、自动 HTTPS、已有证书和纯 HTTP。
 
-运行本脚本将会自动对您的自建emby服务器进行反代，并自动配置nginx，实现emby服务器的远程访问，随时随地查看您的媒体。
+与旧版相比，新版不再层层下载脚本和模板，也不会关闭 TLS 校验或为了申请证书停止 Nginx。配置写入后会先执行 `nginx -t`，失败自动恢复旧配置。
 
-### 使用方法
-一键脚本：
+重构前的代码按原目录结构保存在 `old/`，只用于查阅，不再参与安装流程。
 
+## 快速开始
+
+推荐先下载再执行，便于检查脚本内容：
+
+```bash
+curl -fsSLo install.sh https://raw.githubusercontent.com/aquasofts/emby/main/install.sh
+chmod +x install.sh
+./install.sh
 ```
-wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/emby/main/install.sh && chmod +x install.sh && ./install.sh
+
+交互模式只需要回答几个问题。常见的 Emby 本机源站可直接使用默认值 `http://127.0.0.1:8096`。
+
+也可以完全使用参数：
+
+```bash
+./install.sh \
+  --domain media.example.com \
+  --upstream http://127.0.0.1:8096 \
+  --tls auto \
+  --email admin@example.com \
+  --yes
 ```
 
-### 重大更新日志
+安装前可预览最终配置，不会修改系统：
 
-2024-08-10
+```bash
+./install.sh \
+  --domain media.example.com \
+  --upstream http://127.0.0.1:8096 \
+  --tls off \
+  --dry-run
+```
 
-· 项目正式启动
+## HTTPS 模式
 
-2024-08-12
+- `--tls auto`：安装 Certbot，通过正在运行的 Nginx 申请证书并自动续期。域名必须已解析到服务器，公网 80/443 端口必须可访问。
+- `--tls manual`：使用已有证书，需要同时提供 `--cert /path/fullchain.pem` 和 `--key /path/privkey.pem`。
+- `--tls off`：只监听 HTTP 80 端口，适合上层还有 CDN、负载均衡或内网调试的情况。
 
-· 添加了emby的端口自动申请证书功能，无需手动申请证书。
+自动安装依赖目前明确支持 Debian 12、Ubuntu 22.04 及更新版本。其他发行版可先自行安装 Nginx 和 Certbot，再运行脚本。
 
-· 脚本初步完成
+## 前后端/推流分离
 
-2024-09-07
+添加独立推流域名和源站即可：
 
-· 更新了对前后端分离版本的emby服务端的支持
+```bash
+./install.sh \
+  --domain media.example.com \
+  --upstream https://api-origin.example.com \
+  --stream-domain stream.example.com \
+  --stream-upstream https://stream-origin.example.com \
+  --tls auto \
+  --email admin@example.com \
+  --yes
+```
 
-2024-09-30
+主站文本响应中的推流源站地址会被改写为公开推流域名；视频响应不会进入内存缓冲。manual 模式还可用 `--stream-cert` 和 `--stream-key` 为推流域名指定另一套证书，省略时复用主域名证书。
 
-· 在对前后端分离版本的emby服务端的支持中更新了仅链接重写的功能，以解决emby前端分离版本无法正常访问且缺少域名时的问题。
+## 更新与卸载
 
-### 如何卸载
+使用新参数重新运行脚本即可更新。安装器会备份现有配置、原子替换、检查并重载；任何一步失败都会回滚。
 
-最近有点忙，随缘更新卸载相关脚本，在卸载脚本推出之前请自行手动删除相关文件。
+仅移除本项目创建的 Nginx 配置：
 
-· 请删除以下目录中与您的项目无关的文件 
+```bash
+./install.sh --uninstall
+```
 
-`/etc/nginx/sites-available`
+卸载不会删除 Nginx、Certbot、证书或其他站点，也不会清空 `/etc/nginx`。
 
-`/etc/nginx/sites-enabled`
+## 工作原理
 
-· 或者直接执行nginx卸载脚本
+安装器只管理两个固定路径：
 
-`wget -N --no-check-certificate https://raw.githubusercontent.com/aquasofts/uninstallnginx/main/uninstall.sh && chmod +x uninstall.sh && ./uninstall.sh`
+- `/etc/nginx/sites-available/emby-proxy`
+- `/etc/nginx/sites-enabled/emby-proxy`
 
-· 随后请删除以下目录中与您的项目无关的文件，如果未部署其他项目可直接删除整个文件夹
+它会校验域名、源站、端口和证书路径，生成支持 WebSocket 和长时间媒体连接的 Nginx 配置，然后依次执行备份、写入、`nginx -t` 和 reload。自动 HTTPS 使用 Certbot 的 Nginx 插件，不需要中断已有服务。
 
-`/root/.acme.sh`
+查看全部参数：
 
-`/root/cert`
+```bash
+./install.sh --help
+```
 
-### 啰嗦一句
+## 开发测试
 
-0.本脚本暂时停止维护（高考），有无法解决的问题可使用[sakullla]([sakullla](https://github.com/sakullla))的脚本 [sakullla/nginx-reverse-emby](https://github.com/sakullla/nginx-reverse-emby)
+测试只使用 `--dry-run`，不会接触系统 Nginx：
 
-1.安装nginx过程可能会有点慢，请耐心等待。所有选项都输入"y"即可。
+```bash
+bash -n install.sh tests/test.sh
+bash tests/test.sh
+```
 
-2.本脚本需要全新系统安装环境，非全新环境可能会导致脚本无法使用
-
-3.脚本未加密。里面每个功能都注释的很清楚，不存在任何安全问题，请放心使用。脚本写的很烂有大佬愿意可以提交修改！~
-
-4.本脚基本仅在Ubuntu22、Debian12进行测试。
-
-5.本脚本仅供学习交流使用，不提供任何资源，请勿用于非法用途，否则后果自负。
-
-6.感谢 [x-ui](https://github.com/FranzKafkaYu/x-ui/) [acme1key.sh](https://github.com/tlxhl/acme-1key/) 项目中的acme相关代码
-
-7.期待有大佬可以把端口申请证书修改为nginx模式申请证书，这样可以解决端口占用问题，我技术力不够。。。
-
-8.如果此脚本对您有帮助，不妨点一个star支持一下，让更多人受到帮助
-
-9.如果遇到如图所示界面，直接回车即可
-
-![image](https://github.com/aquasofts/emby/blob/main/image.png)
-
+本项目仅供合法的自建媒体服务使用。

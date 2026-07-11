@@ -1,20 +1,8 @@
+#http
 server {
     listen 80;
     listen [::]:80;
     server_name yourdomain; #
-    return 301 https://$host$request_uri;
-}
-
-server {
-    listen 443 ssl;
-    listen [::]:443 ssl;
-    server_name yourdomain; # 你的域名
-
-    ssl_session_timeout 30m;
-    ssl_protocols TLSv1.1 TLSv1.2 TLSv1.3;
-    ssl_certificate "jjkk";
-    ssl_certificate_key "hhjj";
-    ssl_session_cache shared:SSL:10m;
 
     client_max_body_size 100M;
 
@@ -32,7 +20,7 @@ server {
         proxy_intercept_errors on;
         sub_filter "ggdd" "weasd";
     }
-    
+
     # jellyfin-mpv-shim 客户端， 请求 /Videos/<item_Id>/stream
     location ~ /stream {
     ## 地址填写 emby 的地址, 同 location / 里写的
